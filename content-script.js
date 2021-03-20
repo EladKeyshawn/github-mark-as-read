@@ -3,10 +3,33 @@ class ACTIONS {
   static FAVORITE = "favorite";
   static CHECKED = "checked";
 }
-function getDomain() {
-  const url = window.location.href;
-  const arr = url.split("?");
-  return arr[0];
+
+async function toggleUrlStateKey(url, stateKey) {
+  const urlState = await getUrlState(url);
+
+  return new Promise((resolve) => {
+    urlState[stateKey] = !urlState[stateKey];
+
+    chrome.storage.sync.set({
+      [url]: urlState,
+    });
+
+    resolve(urlState);
+  });
+}
+
+async function getUrlState(url) {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(url, (data) => {
+      const urlState = data[url] || {
+        checked: false,
+        favorite: false,
+        bookmark: false,
+      };
+
+      resolve(urlState);
+    });
+  });
 }
 
 window.onload = () => {
@@ -21,33 +44,6 @@ window.onload = () => {
 
   init();
 
-  async function toggleUrlStateKey(url, stateKey) {
-    const urlState = await getUrlState(url);
-
-    return new Promise((resolve) => {
-      urlState[stateKey] = !urlState[stateKey];
-
-      chrome.storage.sync.set({
-        [url]: urlState,
-      });
-
-      resolve(urlState);
-    });
-  }
-
-  async function getUrlState(url) {
-    return new Promise((resolve) => {
-      chrome.storage.sync.get(url, (data) => {
-        const urlState = data[url] || {
-          checked: false,
-          favorite: false,
-          bookmark: false,
-        };
-
-        resolve(urlState);
-      });
-    });
-  }
 
   function init() {
     document.addEventListener("click", onClick);
@@ -163,7 +159,8 @@ window.onload = () => {
     try {
       const urlState = await toggleUrlStateKey(url, action);
       event.target.src = getIcon({ action, isActive: urlState[action] });
-      linkNode.classList.toggle(actionToLinkCssClass[action]);
+
+      linkNode.classList.toggle(actionToLinkCssClass[action], urlState[action] );
     } catch (err) {
       alert(err);
     }
