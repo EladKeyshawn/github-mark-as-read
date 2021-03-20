@@ -72,6 +72,8 @@ window.onload = () => {
     iconNode.setAttribute("src", getIcon({ action, isActive }));
     iconNode.setAttribute("class", iconClassName);
     iconNode.setAttribute("data-url", linkUrl);
+    iconNode.setAttribute("style", "background:white;");
+
 
     containerNode.appendChild(iconNode);
 
