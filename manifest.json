@@ -1,8 +1,7 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
-
-  "name": "Github Marker",
-  "version": "2.0",
+  "name": "Github Mark As Read",
+  "version": "1.0",
   "description": "Favorite, Bookmark & Mark link as Read in Github",
   "permissions": [
     "storage",
